@@ -1,0 +1,71 @@
+{% extends "AheGsbBundle::layout.html.twig" %}
+{% block body %}
+ {% block bloc1 %}
+  <div class="erreur">
+    {% for message in app.session.flashbag.get('erreurLogMdp') %}
+        {{ message }}
+    {% endfor %}
+  </div>
+
+<div class="container" >
+    <div class="jumbotron" style="background-color:#87CEEB;">
+  <p class="formLabel" style="text-align:center;">Identification Visiteurs</p>
+      <form method="POST" {{ form_enctype(form) }} >
+        {{ form_errors(form) }}
+        <table>
+            <tr>
+                <td>
+                    <div class="formLabel">
+                        {{ form_label(form.login, "Login") }}
+                        {{ form_errors(form.login) }}
+                    </div>
+                </td>  
+                <td>
+                    {# Génération de l'input. #}
+                    <div class="formLabel">
+                    {{ form_widget(form.login) }} 
+                    </div>
+                        
+                </td>    
+             </tr>  
+             
+             <tr>       
+                <td>
+                    <div class="formLabel">
+                        {{ form_label(form.mdp, "Mot de passe") }}
+                    </div>
+                </td>    
+                <td>  
+                    {# Génération de l'input. #}
+                    {{ form_errors(form.mdp) }}
+                    {{ form_widget(form.mdp) }}  
+                        
+                </td>
+            </tr>
+            
+            <tr>
+                 <td>
+                    <div class="formLabel">
+                        {{ form_label(form.profil, "Profil") }}
+                    </div>
+                 </td>
+                 <td>
+                     {{ form_widget(form.profil) }}
+                     
+                 </td>
+             </tr>
+             
+            <tr>
+                <td><input class ="btn btn-success" type="submit" value="Valider" 
+                           name="valider"></td>
+                <td><input class="btn btn-danger" type="reset" value="Annuler" 
+                           name="annuler"></td> 
+            </tr>
+        </table>
+        {{ form_rest(form) }}
+    </form>
+    </div>
+  </div>
+  
+  {% endblock %}
+{% endblock %}
