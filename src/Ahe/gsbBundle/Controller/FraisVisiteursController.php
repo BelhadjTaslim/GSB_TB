@@ -85,6 +85,65 @@ class FraisVisiteursController extends Controller
          return $this->render('AheGsbBundle:Visiteurs:accueilVisiteur.html.twig');
      }
      
+     public function supFHFAction($id) {
+        $c = $this->getDoctrine()->getConnection();
+        $query = "DELETE FROM LigneFraisHorsForfait  where id = ?";
+        $stmt = $c->prepare($query);
+        $stmt->execute(array($id));
+        return $this->redirect($this->generateUrl('gsb_consultation_frais'));
+    }
+    public function modFHFAction($id) {
+        $c = $this->getDoctrine()->getConnection();
+        $query = "SELECT * FROM LigneFraisHorsForfait where id = ?";
+        $stmt = $c->prepare($query);
+        $stmt->execute(array($id));
+        $result = $stmt->fetch();
+        return $this->render('AheGsbBundle:Visiteurs:modFHF.html.twig', array('date' => $result['date'],
+                   'num'=>$result['id'],'libelle'=>$result['libelle'],'montant'=>$result['montant']
+                    ));
+    }
+    
+    public function updateFHFAction() {
+        $request = $this->get('request');
+         if ($this->get('request')->getMethod() == 'POST') {
+             $c = $this->getDoctrine()->getConnection();
+            $libelle = $request->request->get('libelle');
+            $date = $request->request->get('date');
+             $montant = $request->request->get('montant');
+              $id = $request->request->get('idFHF');
+        $query = "UPDATE LigneFraisHorsForfait set libelle =  ? , date = ? , montant = ? where id = ?";
+        $stmt = $c->prepare($query);
+        $stmt->execute(array($libelle,$date,$montant,$id));
+        return $this->redirect($this->generateUrl('gsb_consultation_frais'));
+      }
+    }
+    public function consulterFraisTypeAction() {
+        return $this->render('AheGsbBundle:Visiteurs:typeFrais.html.twig');
+    }
+    public function saisirFraisTypeAction() {
+        return $this->render('AheGsbBundle:Visiteurs:typeFraisSaisie.html.twig');
+    }
+    public function majFraisForfait($idVisiteur, $mois, $lesFrais) {
+        $lesCles = array_keys($lesFrais);
+        $co = $this->getDoctrine()->getConnection();
+        foreach ($lesCles as $unIdFrais) {
+            $qte = $lesFrais[$unIdFrais];
+            $req = "update LigneFraisForfait set LigneFraisForfait.quantite = ?
+			where LigneFraisForfait.idVisiteur = ? and LigneFraisForfait.mois = ?
+			and LigneFraisForfait.idFraisForfait = ? ";
+            $stmt = $co->prepare($req);
+            $stmt->execute(array($qte, $idVisiteur, $mois, $unIdFrais));
+        }
+    }
+    
+    public function creerNouveauFraisHorsForfait($idVisiteur, $mois, $libelle, $date, $montant) {
+        //$dateFr = dateFrancaisVersAnglais($date);
+        $c = $this->getDoctrine()->getConnection();
+        $query = "INSERT INTO LigneFraisHorsForfait values(?,?,?,?,?,?)";
+        $stmt = $c->prepare($query);
+        $stmt->execute(array('', $idVisiteur, $mois, $libelle, $date->format('Y-m-d'), $montant));
+    }
+     
 }
 
 ?>
